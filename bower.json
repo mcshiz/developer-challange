@@ -1,0 +1,11 @@
+{
+  "name": "firewhat",
+  "version": "0.0.0",
+  "dependencies": {
+    "jquery": "~2.1.0"
+  },
+  "devDependencies": {
+    "bootstrap": "~3.3.6",
+    "bootbox": "~4.4.0",
+  }
+}
