@@ -1,76 +1,174 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<!--[if lt IE 7]>      <html class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html> <!--<![endif]-->
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta charset="UTF-8">
+	<title>firewhat</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width">
 
-	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-	<title>Explicitly Create Map Service Layer List</title>
-
+	<!-- ArcGIS Stuff-->
 	<link rel="stylesheet" href="https://js.arcgis.com/3.15/dijit/themes/claro/claro.css">
 	<link rel="stylesheet" href="https://js.arcgis.com/3.15/esri/css/esri.css">
-	<style>
-		html, body, #map {
-			padding: 0;
-			margin: 0;
-			height: 100%;
-			width: 100%;
-		}
-	</style>
+	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
 	<script src="https://js.arcgis.com/3.15/"></script>
+	<!-- build:css styles/vendor.css -->
+	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+	<!-- bower:css -->
+	<!-- endbower -->
+	<!-- endbuild -->
 
-	<script>
-		var map;
+	<!-- build:css styles/main.css -->
+	<link rel="stylesheet" href="styles/main.css">
+	<!-- endbuild -->
+	<link rel="shortcut icon" href="/favicon.ico">
 
-		require([
-					"esri/map",
-					"esri/layers/FeatureLayer",
-					"esri/layers/ArcGISDynamicMapServiceLayer",
-					"esri/layers/ImageParameters",
-					"dojo/dom",
-					"dojo/on",
-					"dojo/query",
-					"dojo/domReady!"
-				],
-				function (Map, FeatureLayer, ArcGISDynamicMapServiceLayer, ImageParameters, dom, on, query) {
-					var layer, visibleLayerIds = [];
-
-					var map = new Map("map", {
-						basemap: "topo",
-						center: [-122.3133059, 41.3182099, ],
-						zoom: 10
-					});
-
-
-
-					var fireLayer = new FeatureLayer("http://services1.arcgis.com/CHRAD8xHGZXuIQsJ/arcgis/rest/services/dev_challenge_ia/FeatureServer/0");
-					var modisLayer = new FeatureLayer("http://tmservices1.esri.com/arcgis/rest/services/LiveFeeds/MODIS_Thermal/MapServer/0");
-					map.addLayer(fireLayer);
-					map.addLayer(modisLayer);
-
-
-					dojo.query("#layer_list > input[type=checkbox]").connect("onclick", function (ev) {
-						console.log(dom.byId(this));
-						console.log(ev)
-						console.log("checking....")
-						console.log(fireLayer)
-						fireLayer.setVisibility(!fireLayer.visible);
-					});
-
-
-
-				});
-	</script>
 </head>
-
 <body>
-Layer List :
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="position: relative">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">FireWhat</a>
+		</div>
+		<div id="navbar" class="navbar-collapse collapse">
+			<form class="navbar-form navbar-right" role="form">
+				<div class="form-group">
+					<input type="text" placeholder="Email" class="form-control">
+				</div>
+				<div class="form-group">
+					<input type="password" placeholder="Password" class="form-control">
+				</div>
+				<button type="submit" class="btn btn-success">Sign in</button>
+			</form>
+		</div><!--/.navbar-collapse -->
+	</div>
+</nav>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-xs-12 col-md-10" >
+			<div class="map-application">
+				Layer List :
 <span id="layer_list">
 	<input type='checkbox' class='list_item' id='modisLayerCheckbox' value=0 checked />Modis Thermal Layer <br>
  	<input type='checkbox' class='list_item' id='fireLayerCheckbox' value=1 checked/>Fire Incident Layer
 </span>
-<br />
-<br />
-<div id="map"></div>
-</body>
+				<br />
+				<br />
+				<div id="map">
+					<button class="text-center " onclick="locateUser()"><b class="geolocationButton glyphicon glyphicon-screenshot"></b></button>
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-12 col-md-2" id="incidentList">
+			<h4 class="text-center">Current Incidents</h4>
+			<hr>
+			<div class="incidents">
+				<span class="loading">Loading</span>
+				<ul></ul>
+			</div>
+		</div>
+	</div>
+</div><!-- /.container -->
 
+<!-- Modal -->
+<div class="modal fade" id="addIncidentModal" tabindex="-1" role="dialog" aria-labelledby="addIncidentModal" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<button type="button" class="close"
+						data-dismiss="modal">
+					<span aria-hidden="true">&times;</span>
+					<span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">Modal title</h4>
+			</div>
+
+			<!-- Modal Body -->
+			<div class="modal-body">
+				<form id="incidentForm" class="newIncidentForm" role="form">
+					<div class="form-group">
+						<label for="name">Name</label>
+						<input type="text" class="form-control" id="name" placeholder="Name"/>
+					</div>
+					<div class="form-group">
+						<div style="margin-bottom: 0.5em">
+							<label for="latitude">Location</label>
+							<button type="button" class="glyphicon glyphicon-screenshot btn btn-default btn-ms" id="location-picker"></button>
+						</div>
+						<div class="row">
+							<div class="col-xs-6">
+								<input type="text" class="form-control col-xs-6" id="latitude" placeholder="Latitude"/>
+							</div>
+							<div class="col-xs-6">
+								<input type="text" class="form-control col-xs-6" id="longitude" placeholder="Longitude"/>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="acres">Acres</label>
+						<input type="text" class="form-control" id="acres" placeholder="Acres"/>
+					</div>
+					<div class="form-group">
+						<label for="ros">Ros</label>
+						<input type="text" class="form-control" id="ros" placeholder="Ros"/>
+					</div>
+					<div class="form-group">
+						<label for="roc">Roc</label>
+						<input type="text" class="form-control" id="roc" placeholder="Roc"/>
+					</div>
+					<div class="form-group">
+						<label for="structures">Structures</label>
+						<input type="text" class="form-control" id="structures" placeholder="Structures"/>
+					</div>
+					<div class="form-group">
+						<label for="hazards">Special Hazards</label>
+						<input type="text" class="form-control" id="hazards" placeholder="Special Hazards"/>
+					</div>
+					<div class="form-group">
+						<label for="resources">Resources</label>
+						<input type="text" class="form-control" id="resources" placeholder="Resources"/>
+					</div>
+					<div class="form-group">
+						<label for="radio">Radio Frequencies</label>
+						<input type="text" class="form-control" id="radio" placeholder="Radio Frequencies"/>
+					</div>
+					<div class="form-group">
+						<label for="comments">Other Comments</label>
+						<textarea type="textarea" class="form-control" id="comments" placeholder="Other Comments"></textarea>
+					</div>
+					<button type="submit" class="btn btn-default btn-primary">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+<!-- build:js scripts/vendor.js -->
+<!-- bower:js -->
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!--<script src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-v1.3.0.js"></script>-->
+<!--<script src="http://builds.emberjs.com/tags/v1.5.0/ember.js"></script>-->
+<!-- endbower -->
+<!-- endbuild -->
+
+<!-- build:js scripts/main.js -->
+<script src="scripts/main.js"></script>
+<!--<script src="scripts/ember-script.js"></script>-->
+<!-- endbuild -->
+</body>
 </html>
