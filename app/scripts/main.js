@@ -7,8 +7,11 @@ var initialize = function(){
 	require([
 			"esri/map",
 			"esri/layers/FeatureLayer",
+			"esri/dijit/LocateButton",
 			"esri/geometry/Point",
 			"esri/symbols/SimpleMarkerSymbol",
+			"esri/symbols/SimpleLineSymbol",
+			"esri/Color",
 			"esri/graphic",
 			"esri/layers/GraphicsLayer",
 			"esri/layers/ImageParameters",
@@ -18,8 +21,7 @@ var initialize = function(){
 			"dojo/domReady!"
 		],
 
-	function (Map, FeatureLayer, Point, SimpleMarkerSymbol, Graphic, GraphicsLayer, ImageParameters, dom, on, query) {
-		var layer, visibleLayerIds = [];
+	function (Map, FeatureLayer,LocateButton, Point, SimpleMarkerSymbol, SimpleLineSymbol, Color, Graphic, GraphicsLayer, ImageParameters, dom, on, query) {
 
 		var map = new Map("map", {
 			basemap: "topo",
@@ -27,10 +29,28 @@ var initialize = function(){
 			zoom: 10
 		});
 
+		//I wanted to use the geoLocate button incase the user navigated away from their position and wanted to return but I think there is a problem with their services.
+		//Even when I try and use the demo here the map stops loading - http://developers.arcgis.com/javascript/sandbox/sandbox.html?sample=widget_locate
+		//So in the mean time I am adding a graphics layer with a blue circle denoting the users location which loads on map startup
+
+		myMap.geoLocate = new LocateButton({
+			map: map
+		}, "LocateButton");
+		myMap.geoLocate.startup();
+
 
 		var gl = new GraphicsLayer();
 		var p = new Point(GeoLocation.userLocation.lng, GeoLocation.userLocation.lat);
-		var s = new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_CROSS).setSize(20);
+		var s =  new SimpleMarkerSymbol(
+			SimpleMarkerSymbol.STYLE_CIRCLE,
+			12,
+			new SimpleLineSymbol(
+				SimpleLineSymbol.STYLE_SOLID,
+				new Color([6, 153, 239, 0.4]),
+				8
+			),
+			new Color([6, 153, 239, 0.84])
+		);
 		var g = new Graphic(p, s);
 		gl.add(g);
 		map.addLayer(gl);

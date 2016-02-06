@@ -3,10 +3,10 @@ html, body, #map {
 	height: 500px;
 	margin: 0;
 	padding: 0;
-	position: relative;
+	/*position: relative;*/
 }
 
-.geolocationButton {
+.locateContainer {
 	position: absolute;
 	z-index: 100;
 	background-color: white;
@@ -20,9 +20,8 @@ html, body, #map {
 	user-select: none;
 	cursor: pointer;
 	border-radius: 5px;
-	border: 1px solid black;
-	top: 105px;
-	left: 20px;
+	top: 150px;
+	left: 35px;
 }
 
 .geolocationButton:hover {
