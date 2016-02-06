@@ -3,9 +3,14 @@ html, body, #map {
 	height: 500px;
 	margin: 0;
 	padding: 0;
-	/*position: relative;*/
 }
-
+#rightPane {
+	border:none;
+	padding: 0;
+}
+.templatePicker {
+	border: solid 2px #444;
+}
 .locateContainer {
 	position: absolute;
 	z-index: 1;
@@ -22,6 +27,10 @@ html, body, #map {
 	border-radius: 5px;
 	top: 150px;
 	left: 35px;
+	border: 1px solid white;
+}
+.locateContainer:hover{
+	border: 1px solid black;
 }
 
 .geolocationButton:hover {
