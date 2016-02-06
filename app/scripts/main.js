@@ -11,62 +11,80 @@ var initialize = function(){
 			"esri/geometry/Point",
 			"esri/symbols/SimpleMarkerSymbol",
 			"esri/symbols/SimpleLineSymbol",
+			"esri/dijit/Popup",
+			"esri/dijit/PopupTemplate",
 			"esri/Color",
 			"esri/graphic",
 			"esri/layers/GraphicsLayer",
-			"esri/layers/ImageParameters",
+			"esri/symbols/SimpleFillSymbol",
+			"dojo/dom-class",
+			"dojo/dom-construct",
 			"dojo/dom",
 			"dojo/on",
 			"dojo/query",
-			"dojo/domReady!"
+			"dojo/domReady!",
+			"dijit/TooltipDialog"
 		],
 
-	function (Map, FeatureLayer,LocateButton, Point, SimpleMarkerSymbol, SimpleLineSymbol, Color, Graphic, GraphicsLayer, ImageParameters, dom, on, query) {
+
+
+	function (Map, FeatureLayer,LocateButton, Point, SimpleMarkerSymbol, SimpleLineSymbol, Popup, PopupTemplate, Color, Graphic, GraphicsLayer,SimpleFillSymbol, domClass, domConstruct,  dom, on, query, TooltipDialog) {
+
+		var fill = new SimpleFillSymbol("solid", null, new Color("#A4CE67"));
+		var popup = new Popup({
+			fillSymbol: fill,
+			titleInBody: false
+		}, domConstruct.create("div"));
+		//Add the dark theme which is customized further in the <style> tag at the top of this page
+		domClass.add(popup.domNode, "dark");
 
 		var map = new Map("map", {
 			basemap: "topo",
 			center: [GeoLocation.userLocation.lng, GeoLocation.userLocation.lat ],
-			zoom: 10
+			zoom: 7,
+			infoWindow: popup
 		});
 
-		//I wanted to use the geoLocate button incase the user navigated away from their position and wanted to return but I think there is a problem with their services.
-		//Even when I try and use the demo here the map stops loading - http://developers.arcgis.com/javascript/sandbox/sandbox.html?sample=widget_locate
-		//So in the mean time I am adding a graphics layer with a blue circle denoting the users location which loads on map startup
-
+		//set scale false here otherswise it zooms in so far it looks like the map is broken
 		myMap.geoLocate = new LocateButton({
-			map: map
+			map: map,
+			setScale: false
 		}, "LocateButton");
 		myMap.geoLocate.startup();
 
+		var template = new PopupTemplate({
+			title: "{Name}",
+			description: '' +
+			'<p class="popupBody">' +
+			'<span class="incidentName">{Name}</span><br>' +
+			'<span class="incidentAcres"><b>Fire Id: </b>{FID}</span><br>' +
+			'<span class="incidentAcres"><b>ID: </b>{Id}</span><br>' +
+			'<span class="incidentAcres"><b>Acres: </b>{Acres}</span><br>' +
+			'<span class="incidentNotes"><b>Notes: </b>{Notes}</span><br>' +
+			'</p>'+
+			'<div class="editIncident"><b class="glyphicon glyphicon-pencil "></b><span>Edit</span></div>' +
+			'<div class="deleteIncident"><b class="glyphicon glyphicon-trash"></b><span>Delete</span></div>'
+		});
+		var fireLayer = new FeatureLayer("http://services1.arcgis.com/CHRAD8xHGZXuIQsJ/arcgis/rest/services/dev_challenge_ia/FeatureServer/0",{
+			mode: FeatureLayer.MODE_ONDEMAND,
+			outFields: ["*"],
+			infoTemplate: template,
+			opacity: 0.5
+		});
 
-		var gl = new GraphicsLayer();
-		var p = new Point(GeoLocation.userLocation.lng, GeoLocation.userLocation.lat);
-		var s =  new SimpleMarkerSymbol(
-			SimpleMarkerSymbol.STYLE_CIRCLE,
-			12,
-			new SimpleLineSymbol(
-				SimpleLineSymbol.STYLE_SOLID,
-				new Color([6, 153, 239, 0.4]),
-				8
-			),
-			new Color([6, 153, 239, 0.84])
-		);
-		var g = new Graphic(p, s);
-		gl.add(g);
-		map.addLayer(gl);
-
-
-		var fireLayer = new FeatureLayer("http://services1.arcgis.com/CHRAD8xHGZXuIQsJ/arcgis/rest/services/dev_challenge_ia/FeatureServer/0");
 		var modisLayer = new FeatureLayer("http://tmservices1.esri.com/arcgis/rest/services/LiveFeeds/MODIS_Thermal/MapServer/0");
 		map.addLayer(fireLayer);
 		map.addLayer(modisLayer);
 
-		dojo.query("#layer_list > input[type=checkbox]").connect("onclick", function (ev) {
-			console.log(dom.byId(this));
-			console.log(ev)
-			console.log("checking....")
-			console.log(fireLayer)
-			fireLayer.setVisibility(!fireLayer.visible);
+
+		dojo.query("#layer_list > input[type=checkbox]").connect("onclick", function () {
+			var checkBox = dom.byId(this).id;
+			if(checkBox === "modisLayerCheckbox") {
+				modisLayer.setVisibility(!modisLayer.visible);
+			}
+			else if(checkBox === "fireLayerCheckbox") {
+				fireLayer.setVisibility(!fireLayer.visible);
+			}
 		});
 
 		//namespace some utility functions
@@ -77,12 +95,11 @@ var initialize = function(){
 			};
 
 			return {
-				locateUser : locateUser
+				locateUser : locateUser,
 			}
 		}();
 	});
 };
-
 
 
 
