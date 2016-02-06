@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3497d2ff-e538-4061-9dc6-19fd6c3f877d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/index.html" afterPath="$PROJECT_DIR$/app/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/styles/main.css" afterPath="$PROJECT_DIR$/app/styles/main.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/main.js" afterPath="$PROJECT_DIR$/app/scripts/main.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -41,11 +39,9 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/scripts/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.22580644">
-              <caret line="185" column="93" selection-start-line="185" selection-start-column="93" selection-end-line="185" selection-end-column="93" />
-              <folding>
-                <element signature="e#2071#2675#0" expanded="false" />
-              </folding>
+            <state vertical-scroll-proportion="0.68458784">
+              <caret line="111" column="44" selection-start-line="111" selection-start-column="44" selection-end-line="111" selection-end-column="44" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -225,7 +221,13 @@
       <option name="project" value="LOCAL" />
       <updated>1454747547269</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="edit attributes complete">
+      <created>1454799210194</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1454799210194</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -283,7 +285,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="geolocate use and initializemap as a callback, place marker are users location" />
     <MESSAGE value="fixed esri's zoom to location function; removed function to place marker initially; finished toggle layers; styled popup for incident click" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed esri's zoom to location function; removed function to place marker initially; finished toggle layers; styled popup for incident click" />
+    <MESSAGE value="edit attributes complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="edit attributes complete" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -306,9 +309,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#2071#2675#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -388,11 +389,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.22580644">
-          <caret line="185" column="93" selection-start-line="185" selection-start-column="93" selection-end-line="185" selection-end-column="93" />
-          <folding>
-            <element signature="e#2071#2675#0" expanded="false" />
-          </folding>
+        <state vertical-scroll-proportion="0.68458784">
+          <caret line="111" column="44" selection-start-line="111" selection-start-column="44" selection-end-line="111" selection-end-column="44" />
+          <folding />
         </state>
       </provider>
     </entry>

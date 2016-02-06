@@ -83,7 +83,7 @@ var initialize = function(){
 		var map = new Map("map", {
 			basemap: "topo",
 			center: [GeoLocation.userLocation.lng, GeoLocation.userLocation.lat ],
-			zoom: 4,
+			zoom: 6,
 			infoWindow: popup
 		});
 
@@ -109,62 +109,35 @@ var initialize = function(){
 		});
 		var modisLayer = new FeatureLayer("http://tmservices1.esri.com/arcgis/rest/services/LiveFeeds/MODIS_Thermal/MapServer/0");
 		var fireLayer = new FeatureLayer("http://services1.arcgis.com/CHRAD8xHGZXuIQsJ/arcgis/rest/services/dev_challenge_ia/FeatureServer/0",{
-			mode: FeatureLayer.MODE_SNAPSHOT,
+			mode: FeatureLayer.MODE_ONDEMAND,
 			outFields: ["*"],
 			infoTemplate: template,
 			opacity: 0.5
 		});
 		map.addLayers([fireLayer,modisLayer]);
+		var drawToolbar = new Draw(map);
 		map.on("layers-add-result", initEditing);
 
 		function initEditing(evt) {
 			console.log("initEditing", evt);
 			var currentLayer = null;
 			var layers = [];
+			var editToolbar = new Edit(map);
 			// only show editable layers in the toolbar
-			arrayUtils.map(evt.layers, function(result, k) {
+			arrayUtils.map(evt.layers, function(result) {
 				if(result.layer._editable === true) {
 					return layers.push(result.layer);
 				}
 			});
-			var editToolbar = new Edit(map);
-			//editToolbar.on("deactivate", function(evt) {
-			//	console.log("current", currentLayer);
-			//	currentLayer.applyEdits(null, [evt.graphic], null);
-			//});
-
 			arrayUtils.forEach(layers, function(layer) {
-				var editingEnabled = false;
-				layer.on("dbl-click", function(evt) {
-					event.stop(evt);
-					if (editingEnabled === false) {
-						editingEnabled = true;
-						editToolbar.activate(Edit.EDIT_VERTICES , evt.graphic);
-					} else {
-						currentLayer = this;
-						editToolbar.deactivate();
-						editingEnabled = false;
-					}
-				});
-
 				layer.on("click",function(evt) {
-
 					chooseEdit(layer, evt);
-					console.log("layer...", layer);
-
-					//event.stop(evt);
-					//if (evt.ctrlKey === true || evt.metaKey === true) {  //delete feature if ctrl key is depressed
-					//	layer.applyEdits(null,null,[evt.graphic]);
-					//	currentLayer = this;
-					//	editToolbar.deactivate();
-					//	editingEnabled=false;
-					//}
 				});
 			});
 
 			function chooseEdit(layer, event){
 				var feature = event;
-				var $map = $("#map")
+				var $map = $("#map");
 				$map.on("click", '.deleteIncident', function(){
 					map.infoWindow.hide();
 					layer.applyEdits(null, null, [feature.graphic]);
@@ -199,7 +172,7 @@ var initialize = function(){
 
 			templatePicker.startup();
 
-			var drawToolbar = new Draw(map);
+
 
 			var selectedTemplate;
 			templatePicker.on("selection-change", function() {
