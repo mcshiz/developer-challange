@@ -19,9 +19,7 @@ var initialize = function(){
 			"esri/graphic",
 			"esri/layers/GraphicsLayer",
 			"esri/toolbars/draw",
-			"esri/toolbars/edit",
 			"esri/config",
-
 
 			"dojo/_base/array",
 			"dojo/_base/event",
@@ -41,8 +39,6 @@ var initialize = function(){
 			"dijit/form/Button"
 		],
 
-
-
 	function (Map,
 			  	FeatureLayer,
 			  	LocateButton,
@@ -57,7 +53,6 @@ var initialize = function(){
 				Graphic,
 				GraphicsLayer,
 			  	Draw,
-			  	Edit,
 			  	esriConfig,
 
 			  	arrayUtils,
@@ -82,12 +77,12 @@ var initialize = function(){
 
 		var map = new Map("map", {
 			basemap: "topo",
-			center: [GeoLocation.userLocation.lng, GeoLocation.userLocation.lat ],
+			center: [GeoLocation.userLocation.lng, GeoLocation.userLocation.lat],
 			zoom: 6,
 			infoWindow: popup
 		});
 
-		//set scale false here otherswise it zooms in so far it looks like the map is broken
+		//set scale false here otherwise it zooms in so far it looks like the map is broken
 		myMap.geoLocate = new LocateButton({
 			map: map,
 			setScale: false
@@ -119,10 +114,8 @@ var initialize = function(){
 		map.on("layers-add-result", initEditing);
 
 		function initEditing(evt) {
-			console.log("initEditing", evt);
-			var currentLayer = null;
+			 myMap.editingEnabled = false;
 			var layers = [];
-			var editToolbar = new Edit(map);
 			// only show editable layers in the toolbar
 			arrayUtils.map(evt.layers, function(result) {
 				if(result.layer._editable === true) {
@@ -152,13 +145,7 @@ var initialize = function(){
 					$modal.modal("show");
 					$(".newIncidentForm").submit(function(e){
 						e.preventDefault();
-						var formObj = JSON.stringify($('.newIncidentForm').serializeObject());
-						var edits = JSON.parse(formObj);
-						edits.FID = attrs.FID;
-						feature.graphic.attributes = edits;
-						feature.graphic.getLayer().applyEdits(null, [feature.graphic], null);
-						//map.infoWindow.refresh();
-						$modal.modal('hide')
+						submitForm(feature, "edit")
 					});
 				});
 			}
@@ -172,109 +159,57 @@ var initialize = function(){
 
 			templatePicker.startup();
 
-
-
 			var selectedTemplate;
 			templatePicker.on("selection-change", function() {
 				if( templatePicker.getSelected() ) {
 					selectedTemplate = templatePicker.getSelected();
+					console.log(selectedTemplate);
 				}
 				drawToolbar.activate(Draw.POINT);
 
 			});
 			// adding a new incident
 			drawToolbar.on("draw-end", function(evt) {
+				if (myMap.editingEnabled === false) {
+					myMap.editingEnabled = true;
+					drawToolbar.activate(Draw.POINT);
+				} else {
+					drawToolbar.deactivate();
+					myMap.editingEnabled = false;
+				}
 				drawToolbar.deactivate();
-				editToolbar.deactivate();
-				var newAttributes = lang.mixin({}, selectedTemplate.template.prototype.attributes);
 				$("#addIncidentModal").modal("show");
 				$(".newIncidentForm").submit(function(e){
 					e.preventDefault();
-					var formObj = JSON.stringify($('.newIncidentForm').serializeObject());
-					newAttributes = JSON.parse(formObj);
-					var newGraphic = new Graphic(evt.geometry, null, newAttributes);
-					$("#addIncidentModal").modal('hide');
-					selectedTemplate.featureLayer.applyEdits([newGraphic], null, null);
+					submitForm(evt);
 				});
+				$("#addIncidentModal").on("click", "#discard,  #close", function(e){
+					console.log("exit!")
+				})
 			});
+			function submitForm(feature, f){
+				if($('input[name="Name"]').val() === "") {
+					$("#validationMessage").show().text("A name is required");
+					return false;
+				}
+				$("#validationMessage").hide();
+				var formObj = JSON.stringify($('.newIncidentForm').serializeObject());
+				var attributes = JSON.parse(formObj);
+				if(f === "edit") {
+					attributes.FID = feature.graphic.attributes.FID;
+					feature.graphic.attributes = attributes;
+					feature.graphic.getLayer().applyEdits(null, [feature.graphic], null);
+					map.infoWindow.hide();
+				} else {
+					var newAttributes = lang.mixin({}, selectedTemplate.template.prototype.attributes);
+					newAttributes = attributes;
+					var newGraphic = new Graphic(feature.geometry, null, newAttributes);
+					selectedTemplate.featureLayer.applyEdits([newGraphic], null, null)
+				}
+				$("#addIncidentModal").modal('hide');
+			};
 		}
 
-//============================================================================================================
-//============================================================================================================
-
-		//$modal.find("#latitude").val(incident.location.lat);
-		//$modal.find("#id").val(incident.location.lng);
-		//$modal.find("#name").val(incident.name);
-		//$modal.find("#acres").val(incident.acres);
-		//$modal.find("#notes").val(incident.comments);
-
-
-		//$(".newIncidentForm").submit(function(e){
-		//	e.preventDefault();
-		//	console.log("submitting form");
-		//	var formObj = JSON.stringify($('.newIncidentForm').serializeObject());
-		//	$("#addIncidentModal").modal('hide');
-		//	console.log(formObj)
-		//});
-
-
-
-		//function addNewIncident(obj, id) {
-		//	id = id || false;
-		//	var incidentDetails = new myMap.IncidentDetails(JSON.parse(obj));
-		//	var incidentRef = id ? id : myMap.incidentCount;
-		//	var ref = new Firebase("https://firewhat.firebaseio.com/"+incidentRef);
-		//	if(id !== false) {
-		//		console.log("updating...")
-		//		ref.update(incidentDetails)
-		//		// firebase ref on child_updated should take care of the rest
-        //
-		//	} else {
-		//		console.log("creating...")
-		//		ref.set(incidentDetails);
-		//		// firebase ref on child_added should take care of the rest
-		//	}
-		//}
-
-
-
-		$.fn.serializeObject = function() {
-			var o = {};
-			var a = this.serializeArray();
-			$.each(a, function() {
-				if (o[this.name] !== undefined) {
-					if (!o[this.name].push) {
-						o[this.name] = [o[this.name]];
-					}
-					o[this.name].push(this.value || '');
-				} else {
-					o[this.name] = this.value || '';
-				}
-			});
-			return o;
-		};
-
-		//function editIncident(){
-		//	var $modal = $("#addIncidentModal");
-		//	ref.once("value", function(snapshot) {
-		//		var incident = snapshot.val();
-        //
-        //
-		//	}, function (errorObject) {
-		//		console.log("The read failed: " + errorObject.code);
-		//	});
-		//	$modal.modal('show');
-		//	$(".newIncidentForm").off().submit(function(e){
-		//		e.preventDefault();
-		//		var obj = JSON.stringify($('.newIncidentForm').serializeObject());
-		//		addNewIncident(obj, id);
-		//		$("#addIncidentModal").modal('hide');
-		//		console.log("here");
-		//	});
-		//}
-
-//============================================================================================================
-//============================================================================================================
 
 
 
@@ -283,6 +218,11 @@ var initialize = function(){
 
 
 
+
+
+
+
+		//toggle layers
 		dojo.query("#layer_list > input[type=checkbox]").connect("onclick", function () {
 			var checkBox = dom.byId(this).id;
 			if(checkBox === "modisLayerCheckbox") {
@@ -293,17 +233,6 @@ var initialize = function(){
 			}
 		});
 
-		//namespace some utility functions
-		myMap.utilities = function() {
-			var locateUser = function() {
-				console.log("setting s")
-				//map.setExtent(extent);
-			};
-
-			return {
-				locateUser : locateUser,
-			}
-		}();
 	});
 };
 
@@ -312,7 +241,7 @@ var initialize = function(){
 var GeoLocation = (function(callback) {
 	var options = {
 		enableHighAccuracy : true,
-		timeout : 500
+		timeout : 1000
 	};
 	function getLocation(position) {
 		console.log(position);
@@ -323,11 +252,10 @@ var GeoLocation = (function(callback) {
 		callback()
 
 	}
-	function fallback() {
+	function fallback(error) {
+		console.log("GeoLoacation Error:", error.message);
 		$.getJSON('//freegeoip.net/json/', function (data) {
-			console.log("using fallback location")
-			console.log(data)
-			// sometimes ClientLocation comes back null
+			console.log("using fallback location");
 			GeoLocation.userLocation = {
 				lng: data.longitude,
 				lat: data.latitude
@@ -336,37 +264,43 @@ var GeoLocation = (function(callback) {
 
 		}).fail(function() {
 			console.log('geolocation failed resorting to default.');
-			GeoLocation.userLocation = {
-				lng: -97.367445640979,
-				lat: 42.877742
-			};
 			callback()
 
 		});
 	}
-
-	function error(error) {
-		document.cookie = "geoLocation=false";
-		console.log(error.message);
+	if (navigator && navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(getLocation, fallback, options);
+	} else {
 		fallback();
 	}
-
-	navigator.geolocation.getCurrentPosition(getLocation, fallback, options);
 
 	return {
 		//setting default
 		userLocation : {
-			lng: -97.367445640979,
-			lat: 42.877742
+			lng: -121.904297,
+			lat: 42.0390942
 		}
 	}
 
 })(initialize);
 
+$.fn.serializeObject = function() {
+	var o = {};
+	var a = this.serializeArray();
+	$.each(a, function() {
+		if (o[this.name] !== undefined) {
+			if (!o[this.name].push) {
+				o[this.name] = [o[this.name]];
+			}
+			o[this.name].push(this.value || '');
+		} else {
+			o[this.name] = this.value || '';
+		}
+	});
+	return o;
+};
 
-//helper function to turn form into object of key/val's
-
-////helper function to clear modal upon closing
-//$("#addIncidentModal").on('hidden.bs.modal', function (e) {
-//	$(".newIncidentForm").find("input[type=text], textarea").val("");
-//});
+//helper function to clear modal upon closing
+$("#addIncidentModal").on('hidden.bs.modal', function (e) {
+	$(".newIncidentForm").find("input, textarea").val("");
+});

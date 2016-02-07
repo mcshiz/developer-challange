@@ -1,6 +1,6 @@
 
 html, body, #map {
-	height: 500px;
+	height: 90vh;
 	margin: 0;
 	padding: 0;
 }
@@ -61,4 +61,7 @@ html, body, #map {
 }
 .popupBody {
 	margin-bottom: 3em;
+}
+#validationMessage {
+	display: none;
 }
