@@ -3,7 +3,7 @@
 
 var gulp = require('gulp');
 var open = require('open');
-var wiredep = require('wiredep').stream;
+var shell = require('gulp-shell')
 
 // Load plugins
 var $ = require('gulp-load-plugins')();
@@ -65,19 +65,16 @@ gulp.task('default', ['clean'], function () {
     gulp.start('build');
 });
 
-// Connect
-gulp.task('connect', function(){
-    $.connect.server({
-        root: 'app',
-        port: 9000,
-        livereload: true
-    });
+
+
+// start
+gulp.task('serve',['open'],shell.task('node app.js'));
+
+gulp.task('open', function(){
+    open("http://localhost:9000");
 });
 
-// Open
-gulp.task('serve', ['connect'], function() {
-  open("http://localhost:9000");
-});
+
 
 // Inject Bower components
 gulp.task('wiredep', function () {
