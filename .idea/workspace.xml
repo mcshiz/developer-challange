@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3497d2ff-e538-4061-9dc6-19fd6c3f877d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/index.html" afterPath="$PROJECT_DIR$/app/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/styles/main.css" afterPath="$PROJECT_DIR$/app/styles/main.css" />
+    <list default="true" id="3497d2ff-e538-4061-9dc6-19fd6c3f877d" name="Default" comment="messing around with centering map on">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/main.js" afterPath="$PROJECT_DIR$/app/scripts/main.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -41,9 +39,12 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/scripts/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2795699">
-              <caret line="83" column="8" selection-start-line="83" selection-start-column="8" selection-end-line="83" selection-end-column="8" />
-              <folding />
+            <state vertical-scroll-proportion="0.74358976">
+              <caret line="107" column="41" selection-start-line="107" selection-start-column="16" selection-end-line="107" selection-end-column="41" />
+              <folding>
+                <element signature="e#3038#6049#0" expanded="false" />
+                <element signature="e#6446#7365#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -235,7 +236,13 @@
       <option name="project" value="LOCAL" />
       <updated>1454799572568</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="functionality completed">
+      <created>1454818228251</created>
+      <option name="number" value="00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1454818228251</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -303,11 +310,12 @@
     <MESSAGE value="fixed esri's zoom to location function; removed function to place marker initially; finished toggle layers; styled popup for incident click" />
     <MESSAGE value="edit attributes complete" />
     <MESSAGE value="remove some comments, change feature mode to ONDEMAND" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove some comments, change feature mode to ONDEMAND" />
+    <MESSAGE value="functionality completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="functionality completed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="2" />
+      <option name="time" value="4" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -326,7 +334,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#3038#6049#0" expanded="false" />
+            <element signature="e#6446#7365#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -406,9 +417,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2795699">
-          <caret line="83" column="8" selection-start-line="83" selection-start-column="8" selection-end-line="83" selection-end-column="8" />
-          <folding />
+        <state vertical-scroll-proportion="0.74358976">
+          <caret line="107" column="41" selection-start-line="107" selection-start-column="16" selection-end-line="107" selection-end-column="41" />
+          <folding>
+            <element signature="e#3038#6049#0" expanded="false" />
+            <element signature="e#6446#7365#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -67,19 +67,11 @@ var initialize = function(){
 				query,
 			  	TooltipDialog) {
 
-		var fill = new SimpleFillSymbol("solid", null, new Color("#A4CE67"));
-		var popup = new Popup({
-			fillSymbol: fill,
-			titleInBody: false
-		}, domConstruct.create("div"));
-		//Add the dark theme which is customized further in the <style> tag at the top of this page
-		domClass.add(popup.domNode, "dark");
 
 		var map = new Map("map", {
 			basemap: "topo",
 			center: [GeoLocation.userLocation.lng, GeoLocation.userLocation.lat],
-			zoom: 6,
-			infoWindow: popup
+			zoom: 6
 		});
 
 		//set scale false here otherwise it zooms in so far it looks like the map is broken
@@ -110,6 +102,15 @@ var initialize = function(){
 			opacity: 0.5
 		});
 		map.addLayers([fireLayer,modisLayer]);
+		fireLayer.on("click", function(feature){
+			map.centerAt(feature.mapPoint).then(function(){
+				feature.infoTemplate.setFeatures(feature.graphic);
+				feature.infoTemplate.show(feature.mapPoint);
+			})
+
+
+		});
+
 		var drawToolbar = new Draw(map);
 		map.on("layers-add-result", initEditing);
 
@@ -210,18 +211,6 @@ var initialize = function(){
 			};
 		}
 
-
-
-
-
-
-
-
-
-
-
-
-
 		//toggle layers
 		dojo.query("#layer_list > input[type=checkbox]").connect("onclick", function () {
 			var checkBox = dom.byId(this).id;
@@ -284,6 +273,9 @@ var GeoLocation = (function(callback) {
 
 })(initialize);
 
+
+
+//helper functions
 $.fn.serializeObject = function() {
 	var o = {};
 	var a = this.serializeArray();
@@ -300,7 +292,7 @@ $.fn.serializeObject = function() {
 	return o;
 };
 
-//helper function to clear modal upon closing
+//clear modal upon closing
 $("#addIncidentModal").on('hidden.bs.modal', function (e) {
 	$(".newIncidentForm").find("input, textarea").val("");
 });
