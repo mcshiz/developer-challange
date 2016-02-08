@@ -20,6 +20,7 @@ var initialize = function(){
 			"esri/layers/GraphicsLayer",
 			"esri/toolbars/draw",
 			"esri/config",
+			"esri/tasks/query",
 
 			"dojo/_base/array",
 			"dojo/_base/event",
@@ -54,6 +55,7 @@ var initialize = function(){
 				GraphicsLayer,
 			  	Draw,
 			  	esriConfig,
+			  	Query,
 
 			  	arrayUtils,
 			  	event,
@@ -66,14 +68,51 @@ var initialize = function(){
 				on,
 				query,
 			  	TooltipDialog) {
-
+		var fill = new SimpleFillSymbol("solid", null, new Color("#A4CE67"));
+		var popup = new Popup({
+			fillSymbol: fill,
+			titleInBody: false
+		}, domConstruct.create("div"));
+		domClass.add(popup.domNode, "dark");
 
 		var map = new Map("map", {
 			basemap: "topo",
 			center: [GeoLocation.userLocation.lng, GeoLocation.userLocation.lat],
-			zoom: 6
+			zoom: 6,
+			infoWindow: popup
 		});
 
+		$("#fidSearch").on("click", function() {
+			var qry = new Query();
+			var searchVal = $('.fidsearchvalue').val();
+			var queryTerm;
+
+			//couldn't get an OR to work in the where clause
+			if($.isNumeric(searchVal)){
+				queryTerm = "FID="+searchVal;
+			} else {
+				queryTerm="Name ='"+searchVal+"'";
+			}
+			qry.where = queryTerm;
+			qry.outFields = [ "*" ];
+			fireLayer.queryFeatures(qry, function(data){
+				if(data.features.length < 1) {
+					$("#fidNotFoundMessage").modal("show");
+					return false;
+				}
+				map.centerAndZoom(data.features[0].geometry, 14);
+				console.log("data", data)
+			})
+		});
+
+
+		//function cb(data){
+		//		console.log("callback query");
+		//		console.log(data)
+		//	}
+		//function fb(data){
+		//	console.log("fb", data)
+		//}
 		//set scale false here otherwise it zooms in so far it looks like the map is broken
 		myMap.geoLocate = new LocateButton({
 			map: map,
@@ -102,20 +141,26 @@ var initialize = function(){
 			opacity: 0.5
 		});
 		map.addLayers([fireLayer,modisLayer]);
-		fireLayer.on("click", function(feature){
-			map.centerAt(feature.mapPoint).then(function(){
-				feature.infoTemplate.setFeatures(feature.graphic);
-				feature.infoTemplate.show(feature.mapPoint);
-			})
-
-
+		map.on("load", function(feature){
+			$(".toggleContainer").show();
+			//on mobile initially disable scrolling so users can get past the map, enable again on feature adding or map click
+			if($(window).width() < 990){
+				map.disableMapNavigation();
+				$(document).on("click touchstart", function(e){
+					var target = e.target;
+					if($(target).is("svg#map_gc") || $(target).parents().is(".templatePicker")) {
+						map.enableMapNavigation()
+					} else {
+						map.disableMapNavigation()
+					}
+				})
+			}
 		});
 
 		var drawToolbar = new Draw(map);
 		map.on("layers-add-result", initEditing);
 
 		function initEditing(evt) {
-			 myMap.editingEnabled = false;
 			var layers = [];
 			// only show editable layers in the toolbar
 			arrayUtils.map(evt.layers, function(result) {
@@ -164,20 +209,12 @@ var initialize = function(){
 			templatePicker.on("selection-change", function() {
 				if( templatePicker.getSelected() ) {
 					selectedTemplate = templatePicker.getSelected();
-					console.log(selectedTemplate);
 				}
 				drawToolbar.activate(Draw.POINT);
 
 			});
 			// adding a new incident
 			drawToolbar.on("draw-end", function(evt) {
-				if (myMap.editingEnabled === false) {
-					myMap.editingEnabled = true;
-					drawToolbar.activate(Draw.POINT);
-				} else {
-					drawToolbar.deactivate();
-					myMap.editingEnabled = false;
-				}
 				drawToolbar.deactivate();
 				$("#addIncidentModal").modal("show");
 				$(".newIncidentForm").submit(function(e){
@@ -212,7 +249,7 @@ var initialize = function(){
 		}
 
 		//toggle layers
-		dojo.query("#layer_list > input[type=checkbox]").connect("onclick", function () {
+		$("#map").on("click", "#layer_list input", function () {
 			var checkBox = dom.byId(this).id;
 			if(checkBox === "modisLayerCheckbox") {
 				modisLayer.setVisibility(!modisLayer.visible);
@@ -296,3 +333,14 @@ $.fn.serializeObject = function() {
 $("#addIncidentModal").on('hidden.bs.modal', function (e) {
 	$(".newIncidentForm").find("input, textarea").val("");
 });
+
+
+
+$(function () {
+	var popoverContent = ''+
+		'<div id="layer_list">'+
+			'<input type="checkbox" class="list_item" id="modisLayerCheckbox" value=0 checked />Modis Thermal Layer <br>'+
+			'<input type="checkbox" class="list_item" id="fireLayerCheckbox" value=1 checked/>Fire Incident Layer'+
+		'</div>';
+	$('[data-toggle="popover"]').popover({placement : 'right', content: popoverContent, html: true})
+})

@@ -11,7 +11,7 @@ html, body, #map {
 .templatePicker {
 	border: solid 2px #444;
 }
-.locateContainer {
+.locateContainer{
 	position: absolute;
 	z-index: 1;
 	background-color: white;
@@ -25,17 +25,33 @@ html, body, #map {
 	user-select: none;
 	cursor: pointer;
 	border-radius: 5px;
-	top: 150px;
-	left: 35px;
-	border: 1px solid white;
-}
-.locateContainer:hover{
-	border: 1px solid black;
+	top: 90px;
+	left: 36px;
 }
 
 .geolocationButton:hover {
 	background-color: #eee;
 }
+
+.toggleContainer {
+	position: absolute;
+	display: none;
+	top: 128px;
+	left: 36px;
+	z-index: 2;
+}
+.toggleContainer button {
+	border-radius: 5px;
+	background-color: rgba(102,102,102,0.80);
+	border: none;
+	color: white;
+	height: 30px;
+	width: 30px;
+	outline : 0;
+	-moz-outline : 0;
+	border : 0
+}
+
 .titlePane {
 	height: 2.5em !important;
 	border-bottom: 1px solid white !important;
@@ -64,4 +80,11 @@ html, body, #map {
 }
 #validationMessage {
 	display: none;
+}
+#layer_list {
+	white-space: nowrap;
+}
+#layer_list input {
+		margin-right:5px ;
+		zoom: 1.75;
 }
