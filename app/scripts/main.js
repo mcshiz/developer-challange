@@ -191,7 +191,7 @@ var initialize = function(){
 					$modal.find("#acres").val(attrs.Acres);
 					$modal.find("#notes").val(attrs.Notes);
 					$modal.modal("show");
-					$(".newIncidentForm").submit(function(e){
+					$(".newIncidentForm").off().submit(function(e){
 						e.preventDefault();
 						submitForm(feature, "edit")
 					});
