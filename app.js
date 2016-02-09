@@ -5,8 +5,8 @@ app.engine('.hbs', exphbs({defaultLayout: 'main.hbs', extname: '.hbs'}));
 app.set('view engine', '.hbs');
 app.use('/app/', express.static(__dirname + '/app'));
 
-app.get('/', function(req, res){
-    res.render('index', {FID : "123432"});
+app.get(/\/[0-9]*/, function(req, res){
+    res.render('index', {brian : req.originalUrl});
 });
 
 //app.get(/[0-9]+$/, function (req, res) {
