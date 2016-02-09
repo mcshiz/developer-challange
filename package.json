@@ -19,6 +19,7 @@
     "wiredep": "^1.4.4"
   },
   "dependencies": {
+    "express-handlebars": "^3.0.0",
     "gulp-shell": "^0.5.2"
   }
 }

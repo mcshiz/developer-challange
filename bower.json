@@ -6,6 +6,5 @@
   },
   "devDependencies": {
     "bootstrap": "~3.3.6",
-    "bootbox": "~4.4.0"
   }
 }

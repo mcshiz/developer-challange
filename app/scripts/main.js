@@ -78,7 +78,7 @@ var initialize = function(){
 		var map = new Map("map", {
 			basemap: "topo",
 			center: [GeoLocation.userLocation.lng, GeoLocation.userLocation.lat],
-			zoom: 6,
+			zoom: 10,
 			infoWindow: popup
 		});
 
@@ -222,6 +222,7 @@ var initialize = function(){
 					submitForm(evt);
 				});
 				$("#addIncidentModal").on("click", "#discard,  #close", function(e){
+					console.log(templatePicker);
 					console.log("exit!")
 				})
 			});
