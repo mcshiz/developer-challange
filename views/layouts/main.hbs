@@ -50,83 +50,14 @@
     </div>
 </nav>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-xs-12 col-md-10" >
-            <div class="map-application">
-                <div id="map">
-                    <div id="LocateButton" class="geolocationButton"></div>
-                    <div class="toggleContainer">
-                        <button type="button" class="toggle-layer glyphicon glyphicon glyphicon-th-list" data-toggle="popover" title="Toggle Layers"></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-12 col-md-2" id="incidentList">
-            <h4 class="text-center">Add Feature</h4>
-            <hr>
-            <div id="rightPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'right'">
-                <div id="templatePickerDiv"></div>
-            </div>
-        </div>
-    </div>
-</div><!-- /.container -->
 
-<!-- Modal -->
-<div class="modal fade" id="addIncidentModal" tabindex="-1" role="dialog" aria-labelledby="addIncidentModal" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <button type="button" class="close" id="close" data-dismiss="modal">
-                    <span aria-hidden="true">&times;</span>
-                    <span class="sr-only">Close</span>
-                </button>
-                <h4 class="modal-title" id="myModalLabel">FireWhat Incident Reporting</h4>
-            </div>
 
-            <!-- Modal Body -->
-            <div class="modal-body">
-                <div id="validationMessage" class="alert alert-danger" role="alert"></div>
-                <form id="incidentForm" class="newIncidentForm" role="form">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" name="Name" placeholder="Name"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="id">Id</label>
-                        <input type="number" class="form-control" id="id" name="Id" placeholder="id"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="acres">Acres</label>
-                        <input type="number" class="form-control" id="acres" name="Acres" placeholder="Acres"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="notes">Notes</label>
-                        <textarea class="form-control" id="notes" name="Notes" placeholder="Notes"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-default btn-primary">Submit</button>
-                    <button type="button" id="discard" class="btn btn-default btn-danger" data-dismiss="modal">Discard</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="modal fade" id="fidNotFoundMessage" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Error</h4>
-            </div>
-            <div class="modal-body">
-                <p>No results found</p>
-            </div>
+{{{body}}}
 
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+
+
+
 
 
 

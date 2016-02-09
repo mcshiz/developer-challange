@@ -1,4 +1,3 @@
-//provide closure
 var initialize = function(){
 	"use strict";
 
@@ -69,13 +68,14 @@ var initialize = function(){
 				on,
 				query,
 			  	TooltipDialog) {
+
 		var fill = new SimpleFillSymbol("solid", null, new Color("#A4CE67"));
 		var popup = new Popup({
 			fillSymbol: fill,
 			titleInBody: false
 		}, domConstruct.create("div"));
 		domClass.add(popup.domNode, "dark");
-
+		//define map
 		var map = new Map("map", {
 			basemap: "topo",
 			center: [GeoLocation.userLocation.lng, GeoLocation.userLocation.lat],
@@ -83,6 +83,8 @@ var initialize = function(){
 			infoWindow: popup
 		});
 
+
+		//search
 		$("#fidSearch").on("click", function() {
 			var qry = new Query();
 			var searchVal = $('.fidsearchvalue').val();
@@ -126,6 +128,8 @@ var initialize = function(){
 			'<div class="editIncident"><b class="glyphicon glyphicon-pencil "></b><span>Edit</span></div>' +
 			'<div class="deleteIncident"><b class="glyphicon glyphicon-trash"></b><span>Delete</span></div>'
 		});
+
+		//define layers
 		var modisLayer = new FeatureLayer("http://tmservices1.esri.com/arcgis/rest/services/LiveFeeds/MODIS_Thermal/MapServer/0");
 		var fireLayer = new FeatureLayer("http://services1.arcgis.com/CHRAD8xHGZXuIQsJ/arcgis/rest/services/dev_challenge_ia/FeatureServer/0",{
 			mode: FeatureLayer.MODE_ONDEMAND,
@@ -134,9 +138,10 @@ var initialize = function(){
 			opacity: 0.5
 		});
 		map.addLayers([fireLayer,modisLayer]);
+
 		map.on("load", function(feature){
 			$(".toggleContainer").show();
-			//on mobile initially disable scrolling so users can get past the map, enable again on feature adding or map click
+			//on mobile, initially disable scrolling so users can get past the map, enable again on map click  or feature adding
 			if($(window).width() < 990){
 				map.disableMapNavigation();
 				$(document).on("click touchstart", function(e){
@@ -149,6 +154,7 @@ var initialize = function(){
 				})
 			}
 		});
+
 
 		var drawToolbar = null;
 		map.on("layers-add-result", initEditing);
@@ -171,10 +177,12 @@ var initialize = function(){
 			function chooseEdit(layer, event){
 				var feature = event;
 				var $map = $("#map");
+				// delete incident
 				$map.on("click", '.deleteIncident', function(){
 					map.infoWindow.hide();
 					layer.applyEdits(null, null, [feature.graphic]);
 				});
+				//edit incident
 				$map.on("click", '.editIncident', function(){
 					var $modal = $("#addIncidentModal");
 					var attrs = feature.graphic.attributes;
@@ -189,6 +197,7 @@ var initialize = function(){
 					});
 				});
 			}
+
 			var templatePicker = new TemplatePicker({
 				featureLayers: layers,
 				rows: "auto",
@@ -198,35 +207,27 @@ var initialize = function(){
 			}, "templatePickerDiv");
 
 			templatePicker.startup();
-
 			var selectedTemplate;
 			templatePicker.on("selection-change", function() {
 				if(templatePicker.getSelected()) {
 					selectedTemplate = templatePicker.getSelected();
 					drawToolbar.activate(Draw.POINT);
 				}
-
-
 			});
+
 			// adding a new incident
 			drawToolbar.on("draw-end", function(evt) {
-				console.log("tb",drawToolbar)
-				console.log(evt);
 				drawToolbar.deactivate();
-
 				$("#addIncidentModal").modal("show");
-				$(".newIncidentForm").submit(function(e){
+				$(".newIncidentForm").off().submit(function(e){
 					e.preventDefault();
 					submitForm(evt);
 				});
 				$("#addIncidentModal").on("click", "#discard,  #close", function(e){
-					console.log("geom",evt.geometry);
-					drawToolbar = new Draw(map);
-
 					console.log("exit!")
-
 				})
 			});
+
 			function submitForm(feature, f){
 				if($('input[name="Name"]').val() === "") {
 					$("#validationMessage").show().text("A name is required");
@@ -253,6 +254,7 @@ var initialize = function(){
 		//toggle layers
 		$("#map").on("click", "#layer_list input", function () {
 			var checkBox = dom.byId(this).id;
+			//could be a switch but there are only 2 for now so if works.
 			if(checkBox === "modisLayerCheckbox") {
 				modisLayer.setVisibility(!modisLayer.visible);
 			}
@@ -336,8 +338,6 @@ $("#addIncidentModal").on('hidden.bs.modal', function (e) {
 	$(".newIncidentForm").find("input, textarea").val("");
 });
 
-
-
 $(function () {
 	var popoverContent = ''+
 		'<div id="layer_list">'+
@@ -346,3 +346,5 @@ $(function () {
 		'</div>';
 	$('[data-toggle="popover"]').popover({placement : 'right', content: popoverContent, html: true})
 })
+
+
