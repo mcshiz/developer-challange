@@ -5,7 +5,7 @@ app.engine('.hbs', exphbs({defaultLayout: 'main.hbs', extname: '.hbs'}));
 app.set('view engine', '.hbs');
 app.use('/app/', express.static(__dirname + '/app'));
 
-app.get(/^[0-9]*$/, function(req, res){
+app.get(/[0-9]*$/, function(req, res){
     res.render('single', {fid : req.originalUrl});
 });
 app.get("/", function(req, res){

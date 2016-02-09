@@ -178,7 +178,8 @@ var initialize = function(){
 				var feature = event;
 				var $map = $("#map");
 				// delete incident
-				$map.on("click", '.deleteIncident', function(){
+				$(document).off('click','.deleteIncident').on('click', '.deleteIncident', function(e){
+					e.preventDefault();
 					map.infoWindow.hide();
 					layer.applyEdits(null, null, [feature.graphic]);
 				});
