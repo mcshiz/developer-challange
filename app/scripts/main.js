@@ -1,6 +1,7 @@
 //provide closure
 var initialize = function(){
 	"use strict";
+
 	var myMap = window.myMap = window.myMap || {};
 
 	var map;
@@ -101,18 +102,10 @@ var initialize = function(){
 					return false;
 				}
 				map.centerAndZoom(data.features[0].geometry, 14);
-				console.log("data", data)
 			})
 		});
 
 
-		//function cb(data){
-		//		console.log("callback query");
-		//		console.log(data)
-		//	}
-		//function fb(data){
-		//	console.log("fb", data)
-		//}
 		//set scale false here otherwise it zooms in so far it looks like the map is broken
 		myMap.geoLocate = new LocateButton({
 			map: map,
@@ -157,11 +150,12 @@ var initialize = function(){
 			}
 		});
 
-		var drawToolbar = new Draw(map);
+		var drawToolbar = null;
 		map.on("layers-add-result", initEditing);
 
 		function initEditing(evt) {
 			var layers = [];
+			drawToolbar = new Draw(map);
 			// only show editable layers in the toolbar
 			arrayUtils.map(evt.layers, function(result) {
 				if(result.layer._editable === true) {
@@ -207,23 +201,30 @@ var initialize = function(){
 
 			var selectedTemplate;
 			templatePicker.on("selection-change", function() {
-				if( templatePicker.getSelected() ) {
+				if(templatePicker.getSelected()) {
 					selectedTemplate = templatePicker.getSelected();
+					drawToolbar.activate(Draw.POINT);
 				}
-				drawToolbar.activate(Draw.POINT);
+
 
 			});
 			// adding a new incident
 			drawToolbar.on("draw-end", function(evt) {
+				console.log("tb",drawToolbar)
+				console.log(evt);
 				drawToolbar.deactivate();
+
 				$("#addIncidentModal").modal("show");
 				$(".newIncidentForm").submit(function(e){
 					e.preventDefault();
 					submitForm(evt);
 				});
 				$("#addIncidentModal").on("click", "#discard,  #close", function(e){
-					console.log(templatePicker);
+					console.log("geom",evt.geometry);
+					drawToolbar = new Draw(map);
+
 					console.log("exit!")
+
 				})
 			});
 			function submitForm(feature, f){
@@ -246,7 +247,7 @@ var initialize = function(){
 					selectedTemplate.featureLayer.applyEdits([newGraphic], null, null)
 				}
 				$("#addIncidentModal").modal('hide');
-			};
+			}
 		}
 
 		//toggle layers
