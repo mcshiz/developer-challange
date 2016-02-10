@@ -86,7 +86,7 @@ var initialize = function(){
 
 
 
-		myMap.queryFeature = function(featureFID) {
+		function queryFeature(featureFID) {
 			var qry = new Query();
 			var queryTerm;
 			var searchVal = featureFID;
@@ -105,14 +105,14 @@ var initialize = function(){
 					return false;
 				}
 				map.centerAndZoom(data.features[0].geometry, 14);
-				map.infoWindow.setContent(data.features[0].getContent());
-				map.infoWindow.show(data.features[0].geometry, map.getInfoWindowAnchor(data.features[0].geometry));
+				//map.infoWindow.setContent(data.features[0].getContent());
+				//map.infoWindow.show(data.features[0].geometry, map.getInfoWindowAnchor(data.features[0].geometry));
 			})
 		};
 		//search
 		$("#fidSearch").on("click", function() {
 			var searchVal = $('.fidsearchvalue').val();
-			myMap.queryFeature(searchVal);
+			queryFeature(searchVal);
 
 		});
 
@@ -152,7 +152,7 @@ var initialize = function(){
 		map.on("load", function(feature){
 			var searchVal = document.getElementById("map").dataset.fid;
 			if(searchVal && searchVal > 0) {
-				myMap.queryFeature(searchVal)
+				queryFeature(searchVal)
 			}
 			$(".toggleContainer").show();
 			//on mobile, initially disable scrolling so users can get past the map, enable again on map click  or feature adding
@@ -198,7 +198,7 @@ var initialize = function(){
 					layer.applyEdits(null, null, [feature.graphic]);
 				});
 				//edit incident
-				$map.on("click", '.editIncident', function(){
+				$(document).on("click", '.editIncident', function(){
 					var $modal = $("#addIncidentModal");
 					var attrs = feature.graphic.attributes;
 					$modal.find("#id").val(attrs.Id);
