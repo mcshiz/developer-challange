@@ -84,12 +84,12 @@ var initialize = function(){
 		});
 
 
-		//search
-		$("#fidSearch").on("click", function() {
-			var qry = new Query();
-			var searchVal = $('.fidsearchvalue').val();
-			var queryTerm;
 
+
+		myMap.queryFeature = function(featureFID) {
+			var qry = new Query();
+			var queryTerm;
+			var searchVal = featureFID;
 			//couldn't get an OR to work in the where clause
 			if($.isNumeric(searchVal)){
 				queryTerm = "FID="+searchVal;
@@ -105,10 +105,15 @@ var initialize = function(){
 					return false;
 				}
 				map.centerAndZoom(data.features[0].geometry, 14);
-				console.log(data);
-				map.infoWindow.setContent(data.features[0].getContent())
+				map.infoWindow.setContent(data.features[0].getContent());
 				map.infoWindow.show(data.features[0].geometry, map.getInfoWindowAnchor(data.features[0].geometry));
 			})
+		};
+		//search
+		$("#fidSearch").on("click", function() {
+			var searchVal = $('.fidsearchvalue').val();
+			myMap.queryFeature(searchVal);
+
 		});
 
 
@@ -122,7 +127,6 @@ var initialize = function(){
 		myMap.geoLocate.startup();
 
 		var template = new PopupTemplate({
-			title: "{Name}",
 			description: '' +
 			'<p class="popupBody">' +
 			'<span class="incidentName">{Name}</span><br>' +
@@ -146,6 +150,10 @@ var initialize = function(){
 		map.addLayers([fireLayer,modisLayer]);
 
 		map.on("load", function(feature){
+			var searchVal = document.getElementById("map").dataset.fid;
+			if(searchVal && searchVal > 0) {
+				myMap.queryFeature(searchVal)
+			}
 			$(".toggleContainer").show();
 			//on mobile, initially disable scrolling so users can get past the map, enable again on map click  or feature adding
 			if($(window).width() < 990){
@@ -204,7 +212,6 @@ var initialize = function(){
 					});
 				});
 			}
-
 			var templatePicker = new TemplatePicker({
 				featureLayers: layers,
 				rows: "auto",

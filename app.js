@@ -12,16 +12,19 @@ app.use('/app/', express.static(__dirname + '/app'));
 
 
 
-app.get(/[0-9]*$/, function(req, res){
+app.get(/[0-9]+$/, function(req, res){
     var fid = req.originalUrl.replace(/\//,"");
-    request('http://services1.arcgis.com/CHRAD8xHGZXuIQsJ/arcgis/rest/services/dev_challenge_ia/FeatureServer/0/query?where=FID='+fid+'&f=json', function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            console.log(body);
+
+    request('http://services1.arcgis.com/CHRAD8xHGZXuIQsJ/arcgis/rest/services/dev_challenge_ia/FeatureServer/0/query?where=FID='+fid+'&outFields=*&f=json', function (error, response, body) {
+        var queryResults = JSON.parse(body);
+        if (!error && response.statusCode == 200 && queryResults.features[0]) {
+
+            res.render('single', {attrs : queryResults.features[0].attributes, geom: queryResults.features[0].geometry});
         } else {
-            console.log("err")
+            res.render('index');
         }
     });
-    res.render('single', {fid : "brian"});
+
 });
 app.get("/", function(req, res){
 
