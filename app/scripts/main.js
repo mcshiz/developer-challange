@@ -99,11 +99,15 @@ var initialize = function(){
 			qry.where = queryTerm;
 			qry.outFields = [ "*" ];
 			fireLayer.queryFeatures(qry, function(data){
+				console.log("i", data.screenPoint)
 				if(data.features.length < 1) {
 					$("#fidNotFoundMessage").modal("show");
 					return false;
 				}
 				map.centerAndZoom(data.features[0].geometry, 14);
+				console.log(data);
+				map.infoWindow.setContent(data.features[0].getContent())
+				map.infoWindow.show(data.features[0].geometry, map.getInfoWindowAnchor(data.features[0].geometry));
 			})
 		});
 
