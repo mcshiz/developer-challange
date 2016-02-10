@@ -112,6 +112,8 @@ var initialize = function(){
 		});
 
 
+
+
 		//set scale false here otherwise it zooms in so far it looks like the map is broken
 		myMap.geoLocate = new LocateButton({
 			map: map,
