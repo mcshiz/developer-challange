@@ -99,12 +99,12 @@ var initialize = function(){
 			qry.where = queryTerm;
 			qry.outFields = [ "*" ];
 			fireLayer.queryFeatures(qry, function(data){
-				console.log("i", data.screenPoint)
 				if(data.features.length < 1) {
 					$("#fidNotFoundMessage").modal("show");
 					return false;
 				}
 				map.centerAndZoom(data.features[0].geometry, 14);
+				data.features[0].setInfoTemplate(template);
 				//map.infoWindow.setContent(data.features[0].getContent());
 				//map.infoWindow.show(data.features[0].geometry, map.getInfoWindowAnchor(data.features[0].geometry));
 			})
@@ -149,6 +149,15 @@ var initialize = function(){
 		});
 		map.addLayers([fireLayer,modisLayer]);
 
+		fireLayer.on("click", function(event){
+			var graphic = event.graphic;
+			map.infoWindow.setContent(graphic.getContent());
+			map.infoWindow.setTitle(graphic.getTitle());
+			map.infoWindow.show(event.screenPoint,
+				map.getInfoWindowAnchor(event.screenPoint));
+		})
+
+
 		map.on("load", function(feature){
 			var searchVal = document.getElementById("map").dataset.fid;
 			if(searchVal && searchVal > 0) {
@@ -190,8 +199,8 @@ var initialize = function(){
 
 			function chooseEdit(layer, event){
 				var feature = event;
-				var $map = $("#map");
 				// delete incident
+				// prevent multiple deletions
 				$(document).off('click','.deleteIncident').on('click', '.deleteIncident', function(e){
 					e.preventDefault();
 					map.infoWindow.hide();
@@ -259,7 +268,22 @@ var initialize = function(){
 					var newAttributes = lang.mixin({}, selectedTemplate.template.prototype.attributes);
 					newAttributes = attributes;
 					var newGraphic = new Graphic(feature.geometry, null, newAttributes);
-					selectedTemplate.featureLayer.applyEdits([newGraphic], null, null)
+					selectedTemplate.featureLayer.applyEdits([newGraphic], null, null, function(newFeature){
+						var newFeatureId = newFeature[0].objectId;
+						$.ajax({
+							type: 'POST',
+							url: "http://127.0.0.1:9000/add-new",
+							data: {"attrs": newAttributes, "fid": newFeatureId},
+							success: function (data) {
+								console.log(data)
+							},
+							error: function (xhr, status, error) {
+								console.log("x",xhr)
+								console.log('s',status)
+								console.log('e',error)
+							}
+						});
+					});
 				}
 				$("#addIncidentModal").modal('hide');
 			}
@@ -279,8 +303,6 @@ var initialize = function(){
 
 	});
 };
-
-
 
 var GeoLocation = (function(callback) {
 	var options = {
@@ -328,8 +350,6 @@ var GeoLocation = (function(callback) {
 
 })(initialize);
 
-
-
 //helper functions
 $.fn.serializeObject = function() {
 	var o = {};
@@ -361,4 +381,6 @@ $(function () {
 	$('[data-toggle="popover"]').popover({placement : 'right', content: popoverContent, html: true})
 })
 
+function sendEmail() {
 
+}
